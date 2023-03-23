@@ -8,7 +8,6 @@
 //===----------------------------------------------------------------------===//
 
 #include "bmcpu_common.h"
-#include "mlir/IR/BlockAndValueMapping.h"
 #include "mlir/IR/PatternMatch.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 #include "tpu_mlir/Backend/BM168x/BM168x.h"

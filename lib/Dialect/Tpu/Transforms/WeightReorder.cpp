@@ -12,7 +12,6 @@
 #include "tpu_mlir/Dialect/Tpu/Transforms/CV18xx/WeightReorder.h"
 #include "tpu_mlir/Dialect/Tpu/Transforms/Passes.h"
 #include "tpu_mlir/Support/Module.h"
-#include "mlir/IR/BlockAndValueMapping.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 #include "llvm/Support/Format.h"
 #include "llvm/Support/raw_ostream.h"

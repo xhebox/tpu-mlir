@@ -1,0 +1,6 @@
+[submodule "llvm"]
+	path = third_party/llvm
+	url = https://github.com/llvm/llvm-project
+	shallow = true
+[submodule "llvm/"]
+	branch = release/16.x

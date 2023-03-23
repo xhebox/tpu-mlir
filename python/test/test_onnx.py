@@ -125,6 +125,7 @@ class ONNX_IR_TESTER(object):
             "ReduceProd":   (self.test_ReduceProd,  Y, N, N),
             "Reciprocal":   (self.test_Reciprocal,  Y, N, Y),
             "Relu":         (self.test_Relu,        Y, N, Y),
+            "PermuteMove":  (self.test_PermuteMove,     Y, N, Y),
             "ScatterND":    (self.test_ScatterND,   Y, N, N),
             "SiLU":         (self.test_SiLU,        Y, N, Y),
             "Softmax":      (self.test_Softmax,     Y, N, Y),
@@ -1142,6 +1143,34 @@ class ONNX_IR_TESTER(object):
         graph_def = helper.make_graph([conv_def, relu_def],
                                       case_name, [input], [output],
                                       initializer=[weight, bias])
+        self.onnx_and_test(graph_def)
+
+    def test_PermuteMove(self, case_name):
+        input_shape = [1, 16, 28, 28]
+        output_shape = [1, 16, 28, 28]
+
+        input = helper.make_tensor_value_info('input', TensorProto.FLOAT, input_shape)
+        output = helper.make_tensor_value_info('output', TensorProto.FLOAT, output_shape)
+        w_data = np.random.rand(*input_shape).astype(np.float32)
+        w_value = helper.make_tensor(
+            name='w',
+            data_type=onnx.TensorProto.FLOAT,
+            dims=w_data.shape,
+            vals=w_data.flatten(),
+        )
+
+        transpose_node = helper.make_node("Transpose",
+                                         inputs=['input'],
+                                         outputs=['e'],
+                                         perm=[1, 0, 2, 3])
+        add_node = helper.make_node(
+            'Add',  # node name
+            ['e', 'w'],  # inputs
+            ['output'],  # outputs
+        )
+        graph_def = helper.make_graph([transpose_node, add_node],
+                                      case_name, [input], [output],
+                                      initializer=[w_value])
         self.onnx_and_test(graph_def)
 
     def test_LeakyRelu(self, case_name):

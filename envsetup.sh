@@ -30,4 +30,6 @@ export PYTHONPATH=$PROJECT_ROOT/third_party/llvm/python_packages/mlir_core:$PYTH
 export PYTHONPATH=$PROJECT_ROOT/third_party/caffe/python:$PYTHONPATH
 export PYTHONPATH=$PROJECT_ROOT/python:$PYTHONPATH
 
+export CMAKE_PREFIX_PATH="$PROJECT_ROOT/llvm/lib/cmake:/opt/homebrew/opt/pybind11/share/cmake:$CMAKE_PREFIX_PATH"
+
 export OMP_NUM_THREADS=4

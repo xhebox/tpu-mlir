@@ -1,7 +1,3 @@
-if (NOT DEFINED FLATBUFFERS_PATH)
-  message(FATAL_ERROR "Please set FLATBUFFERS_PATH")
-endif()
-message(STATUS "FLATBUFFERS_PATH: ${FLATBUFFERS_PATH}")
 function(compile_fbs)
   foreach(fbs_file IN LISTS ARGN)
     get_filename_component(name ${fbs_file} NAME_WE)
@@ -10,7 +6,7 @@ function(compile_fbs)
     message(STATUS "To compile fbs files ${fbs_file} for ${target_header}")
     add_custom_command(OUTPUT ${target_header}
       DEPENDS ${fbs_file}
-      COMMAND ${FLATBUFFERS_PATH}/bin/flatc -o .  --gen-mutable --gen-object-api  --cpp ${fbs_file}
+			COMMAND ${FLATBUFFER_CMD} -o .  --gen-mutable --gen-object-api  --cpp ${fbs_file}
     )
 		set(targets ${targets} ${target_header})
 		add_custom_command(OUTPUT ${fbs_header}

@@ -14,6 +14,7 @@
 #include "mlir/Pass/Pass.h"
 
 using namespace tpu_mlir::top;
+using namespace tpu_mlir::trait;
 
 struct TopPermuteToPixelShuffle : public OpRewritePattern<PermuteOp> {
   using OpRewritePattern::OpRewritePattern;
@@ -422,10 +423,33 @@ struct NonZeroPermutePattern : public OpRewritePattern<PermuteOp> {
   }
 };
 
+/**
+ * Op1 -> Permute -> next -> Op2 => Op1 -> next -> Permute -> Op2
+ **/
+struct PermuteMovePattern : public OpRewritePattern<PermuteOp> {
+  using OpRewritePattern::OpRewritePattern;
+
+  LogicalResult matchAndRewrite(PermuteOp op,
+                                PatternRewriter &rewriter) const override {
+		const auto &prevOp = op.getInput().getDefiningOp();
+    const auto &nextOp = *op.getOutput().getUsers().begin();
+    // check topo
+    if (!nextOp->hasTrait<SupportPermuteMove>()) {
+      return failure();
+    }
+
+		// rewrite
+    rewriter.replaceOp(prevOp, {op.getOutput()});
+    rewriter.replaceOp(op, {nextOp->getResult(0)});
+    rewriter.replaceOp(nextOp, {prevOp->getResult(0)});
+    return success();
+  }
+};
+
 void PermuteOp::getCanonicalizationPatterns(RewritePatternSet &results,
                                             MLIRContext *context) {
   results.insert<TopPermuteToPixelShuffle,
                  TopPermuteToReorg, Permute5dSplit,
                  PermuteFuse, TopPermuteToReshape,
-                 NonZeroPermutePattern>(context);
+                 NonZeroPermutePattern, PermuteMovePattern>(context);
 }
